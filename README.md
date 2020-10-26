@@ -9,6 +9,13 @@ This is a simple CLI tool that wraps the AWS Cost Explorer APIs to be able to qu
 
 ## Installation
 
+### Homebrew
+
+```
+brew tap rocketmiles/aws-cct https://github.com/rocketmiles/aws-cct
+brew install aws-cct
+```
+
 ### Through GitHub
 
 Download from the [releases](https://github.com/rocketmiles/aws-cct/releases)
