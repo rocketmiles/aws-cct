@@ -32,7 +32,6 @@ brews:
     owner: rocketmiles
     name: aws-cct
   description: AWS Cost Comparison Tool
-  download_strategy: CurlDownloadStrategy
   homepage: https://github.com/rocketmiles/aws-cct
   test: |
     system "#{bin}/aws-cct --help"
