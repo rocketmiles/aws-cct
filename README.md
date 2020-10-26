@@ -61,7 +61,9 @@ You should see a local binary called `aws-cct` which you can use to interact wit
 ## Credits
 
 [AWS SDK for Go](https://docs.aws.amazon.com/sdk-for-go/api/service/costexplorer/)
+
 [Urfav CLI Lib](https://github.com/urfave/cli/)
+
 [go-pretty for table output](https://github.com/jedib0t/go-pretty)
 
 ## License
