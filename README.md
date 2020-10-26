@@ -7,6 +7,18 @@ This is a simple CLI tool that wraps the AWS Cost Explorer APIs to be able to qu
 * AWS Credentials Setup locally
 * Access to Cost Explorer (`ce:*`)
 
+## Installation
+
+### Through GitHub
+
+Download from the [releases](https://github.com/rocketmiles/aws-cct/releases)
+
+### Go Get
+
+```
+go get github.com/rocketmiles/aws-cct
+```
+
 ## Usage
 
 For full usage, see the help page with `aws-cct help`:
