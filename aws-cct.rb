@@ -2,16 +2,16 @@
 class AwsCct < Formula
   desc "AWS Cost Comparison Tool"
   homepage "https://github.com/rocketmiles/aws-cct"
-  version "1.0.0"
+  version "1.0.1"
   bottle :unneeded
 
   if OS.mac?
-    url "https://github.com/rocketmiles/aws-cct/releases/download/v1.0.0/aws-cct_1.0.0_Darwin_x86_64.tar.gz"
-    sha256 "50d62e662267ad65192e2b57e40b38dc4d7ad784681ef8f8309869b820b491ca"
+    url "https://github.com/rocketmiles/aws-cct/releases/download/v1.0.1/aws-cct_1.0.1_Darwin_x86_64.tar.gz"
+    sha256 "8305ab23048d8761407246500e62d9daa3f12d958a399c54d870474e4c4516b0"
   elsif OS.linux?
     if Hardware::CPU.intel?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.0.0/aws-cct_1.0.0_Linux_x86_64.tar.gz"
-      sha256 "1ac72a1beb71cec7c7cef64e2d92249f339d4e0c694cbba701a910d6bea1f852"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.0.1/aws-cct_1.0.1_Linux_x86_64.tar.gz"
+      sha256 "cb5cb15fe990ff2be4383a0fa82582bf3e5f3b5e7a053c226e1e4cc23814f410"
     end
   end
 
