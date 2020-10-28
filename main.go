@@ -118,7 +118,7 @@ func main() {
 			}
 			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta)})
 			fmt.Printf("\n")
-			fmt.Printf(tw.Render())
+			fmt.Printf(tw.RenderCSV())
 			fmt.Printf("\n")
 			return nil
 		},
