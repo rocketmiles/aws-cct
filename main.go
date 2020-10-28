@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/costexplorer"
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/leekchan/accounting"
 	"github.com/urfave/cli/v2"
 	"log"
@@ -117,6 +118,13 @@ func main() {
 				tw.AppendRow(table.Row{service, ac.FormatMoney(amounts[0]), ac.FormatMoney(amounts[1]), ac.FormatMoney(amounts[2])})
 			}
 			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta)})
+
+			tw.SetColumnConfigs([]table.ColumnConfig{
+				{Name: firstMonthStart, Align: text.AlignRight},
+				{Name: secondMonthHeader, Align: text.AlignRight},
+				{Name: "Delta", Align: text.AlignRight},
+			})
+
 			fmt.Printf("\n")
 			fmt.Printf(tw.Render())
 			fmt.Printf("\n")
