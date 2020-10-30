@@ -45,6 +45,8 @@ GLOBAL OPTIONS:
    --end value          Second month to compare (2020-02-01) (default: "2020-10-01")
    --cost-metric value  Cost Metric to compare (NetAmortizedCost, UnblendedCost, etc.) (default: "NetAmortizedCost")
    --service value      Define a service to dig into
+   --sort value         Column to sort results on (name, start, end, delta) (default: "name")
+   --sort-order value   Order to sort in (asc or desc) (default: "asc")
    --help, -h           show help (default: false)
 ```
 
@@ -67,6 +69,13 @@ aws-cct --service "Amazon Elastic Compute Cloud - Compute"
 *Compare Older Months*
 ```
 aws-cct --start 2020-08-01 --end 2020-09-01
+```
+
+*Sort on a column*
+
+You can sort on any column, ascending or descending, for example to see the largest deltas first.
+```
+aws-cct --sort delta --sort-order desc
 ```
 
 ## Local Development

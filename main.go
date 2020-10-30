@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,6 +24,8 @@ func main() {
 	var secondMonthStart string
 	var costMetric string
 	var serviceFilter string
+	var sortColumn string
+	var sortOrder string
 	currentDate := time.Now()
 	thisMonthFirst := time.Date(currentDate.Year(), currentDate.Month(), 1, 0, 0, 0, 0, time.UTC)
 	previousMonthFirst := thisMonthFirst.AddDate(0, -1, 0)
@@ -55,6 +58,18 @@ func main() {
 				Value:       "",
 				Usage:       "Define a service to dig into",
 				Destination: &serviceFilter,
+			},
+			&cli.StringFlag{
+				Name:        "sort",
+				Value:       "name",
+				Usage:       "Column to sort results on (name, start, end, delta)",
+				Destination: &sortColumn,
+			},
+			&cli.StringFlag{
+				Name:        "sort-order",
+				Value:       "asc",
+				Usage:       "Order to sort in (asc or desc)",
+				Destination: &sortOrder,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -89,8 +104,15 @@ func main() {
 			secondResultsCosts := GetCosts(svc, secondMonthStart, secondMonthEnd, costMetric, grouping, serviceFilter)
 			allServiceNames := ExtractAllServiceNames(firstResultsCosts, secondResultsCosts)
 
-			var finalResultsCosts map[string][]float64
-			finalResultsCosts = make(map[string][]float64)
+			type ServiceCosts struct {
+				serviceName  string
+				amount       float64
+				secondAmount float64
+				delta        float64
+			}
+
+			var finalResultsCosts []ServiceCosts
+			finalResultsCosts = make([]ServiceCosts, 0, len(allServiceNames))
 			var totalAmount = 0.0
 			var totalSecondAmount = 0.0
 			var totalDelta = 0.0
@@ -99,15 +121,36 @@ func main() {
 				secondAmount, _ := secondResultsCosts[service]
 				secondAmount *= multiplier
 				delta := secondAmount - amount
-				finalResultsCosts[service] = []float64{
+				finalResultsCosts = append(finalResultsCosts, ServiceCosts{
+					service,
 					amount,
 					secondAmount,
 					delta,
-				}
+				})
 				totalAmount += amount
 				totalSecondAmount += secondAmount
 				totalDelta += delta
 			}
+
+			// Sort results
+			sort.Slice(finalResultsCosts, func(i, j int) bool {
+				var retVal bool
+				switch sortColumn {
+				case "start":
+					retVal = finalResultsCosts[i].amount < finalResultsCosts[j].amount
+				case "end":
+					retVal = finalResultsCosts[i].secondAmount < finalResultsCosts[j].secondAmount
+				case "delta":
+					retVal = finalResultsCosts[i].delta < finalResultsCosts[j].delta
+				default: // default to service name
+					retVal = strings.ToLower(finalResultsCosts[i].serviceName) < strings.ToLower(finalResultsCosts[j].serviceName)
+				}
+				if sortOrder == "desc" {
+					retVal = !retVal
+				}
+				return retVal
+			})
+
 			// Render Table
 			tw := table.NewWriter()
 			var secondMonthHeader = secondMonthStart
@@ -115,8 +158,8 @@ func main() {
 				secondMonthHeader += " (projection)"
 			}
 			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta"})
-			for service, amounts := range finalResultsCosts {
-				tw.AppendRow(table.Row{service, ac.FormatMoney(amounts[0]), ac.FormatMoney(amounts[1]), ac.FormatMoney(amounts[2])})
+			for _, serviceCosts := range finalResultsCosts {
+				tw.AppendRow(table.Row{serviceCosts.serviceName, ac.FormatMoney(serviceCosts.amount), ac.FormatMoney(serviceCosts.secondAmount), ac.FormatMoney(serviceCosts.delta)})
 			}
 			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta)})
 
