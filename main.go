@@ -94,15 +94,18 @@ func main() {
 			var totalAmount = 0.0
 			var totalSecondAmount = 0.0
 			var totalDelta = 0.0
+			var totalDeltaPercent = 0.0
 			for _, service := range allServiceNames {
 				amount, _ := firstResultsCosts[service]
 				secondAmount, _ := secondResultsCosts[service]
 				secondAmount *= multiplier
 				delta := secondAmount - amount
+				deltaPercent := delta / amount * 100
 				finalResultsCosts[service] = []float64{
 					amount,
 					secondAmount,
 					delta,
+					deltaPercent,
 				}
 				totalAmount += amount
 				totalSecondAmount += secondAmount
@@ -114,16 +117,18 @@ func main() {
 			if isProjection {
 				secondMonthHeader += " (projection)"
 			}
-			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta"})
+			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta", "Delta Percent"})
 			for service, amounts := range finalResultsCosts {
-				tw.AppendRow(table.Row{service, ac.FormatMoney(amounts[0]), ac.FormatMoney(amounts[1]), ac.FormatMoney(amounts[2])})
+				tw.AppendRow(table.Row{service, ac.FormatMoney(amounts[0]), ac.FormatMoney(amounts[1]), ac.FormatMoney(amounts[2]), fmt.Sprintf("%s%%%%", accounting.FormatNumber(amounts[3], 1, "", "."))})
 			}
-			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta)})
+			totalDeltaPercent = totalDelta / totalAmount * 100
+			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta), fmt.Sprintf("%s%%%%", accounting.FormatNumber(totalDeltaPercent, 1, "", "."))})
 
 			tw.SetColumnConfigs([]table.ColumnConfig{
 				{Name: firstMonthStart, Align: text.AlignRight, AlignFooter: text.AlignRight},
 				{Name: secondMonthHeader, Align: text.AlignRight, AlignFooter: text.AlignRight},
 				{Name: "Delta", Align: text.AlignRight, AlignFooter: text.AlignRight},
+				{Name: "Delta Percent", Align: text.AlignRight, AlignFooter: text.AlignRight},
 			})
 
 			fmt.Printf("\n")
