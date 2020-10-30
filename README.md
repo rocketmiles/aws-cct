@@ -72,6 +72,7 @@ aws-cct --start 2020-08-01 --end 2020-09-01
 ```
 
 *Sort on a column*
+
 You can sort on any column, ascending or descending, for example to see the largest deltas first.
 ```
 aws-cct --sort delta --sort-order desc
