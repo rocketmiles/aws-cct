@@ -62,7 +62,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "sort",
 				Value:       "name",
-				Usage:       "Column to sort results on (name, start, end, delta)",
+				Usage:       "Column to sort results on (name, start, end, delta, deltapercent)",
 				Destination: &sortColumn,
 			},
 			&cli.StringFlag{
@@ -148,6 +148,8 @@ func main() {
 					retVal = finalResultsCosts[i].secondAmount < finalResultsCosts[j].secondAmount
 				case "delta":
 					retVal = finalResultsCosts[i].delta < finalResultsCosts[j].delta
+				case "deltapercent":
+					retVal = finalResultsCosts[i].deltaPercent < finalResultsCosts[j].deltaPercent
 				default: // default to service name
 					retVal = strings.ToLower(finalResultsCosts[i].serviceName) < strings.ToLower(finalResultsCosts[j].serviceName)
 				}
