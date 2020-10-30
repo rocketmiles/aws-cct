@@ -59,6 +59,10 @@ func main() {
 				Usage:       "Define a service to dig into",
 				Destination: &serviceFilter,
 			},
+			&cli.StringSliceFlag{
+				Name:        "tag",
+				Usage:       "Tag value to filter results (app=web, env=prod, etc.)",
+			},
 			&cli.StringFlag{
 				Name:        "sort",
 				Value:       "name",
@@ -100,8 +104,10 @@ func main() {
 				grouping = "USAGE_TYPE"
 			}
 
-			firstResultsCosts := GetCosts(svc, firstMonthStart, firstMonthEnd, costMetric, grouping, serviceFilter)
-			secondResultsCosts := GetCosts(svc, secondMonthStart, secondMonthEnd, costMetric, grouping, serviceFilter)
+			tagFilters := c.StringSlice("tag")
+
+			firstResultsCosts := GetCosts(svc, firstMonthStart, firstMonthEnd, costMetric, grouping, serviceFilter, tagFilters)
+			secondResultsCosts := GetCosts(svc, secondMonthStart, secondMonthEnd, costMetric, grouping, serviceFilter, tagFilters)
 			allServiceNames := ExtractAllServiceNames(firstResultsCosts, secondResultsCosts)
 
 			type ServiceCosts struct {
@@ -198,16 +204,29 @@ func ExtractAllServiceNames(firstResultsCosts map[string]float64, secondResultsC
 	return allServiceNames
 }
 
-func GetCosts(svc *costexplorer.CostExplorer, start string, end string, costmetric string, grouping string, serviceFilter string) map[string]float64 {
-	var filter *costexplorer.Expression
-	if serviceFilter != "" {
-		filter = &costexplorer.Expression{
-			Dimensions: &costexplorer.DimensionValues{
-				Key:    aws.String("SERVICE"),
-				Values: aws.StringSlice([]string{serviceFilter}),
-			},
+func GetCosts(svc *costexplorer.CostExplorer, start string, end string, costmetric string, grouping string, serviceFilter string, tagFilters []string) map[string]float64 {
+	// Assemble filters
+	var filters []*costexplorer.Expression
+	if len(tagFilters) > 0 {
+		for _, tagFilter := range tagFilters {
+			tagParts := strings.SplitN(tagFilter, "=", 2)
+			if len(tagParts) == 2 {
+				filters = append(filters, GetTagExpression(tagParts[0], tagParts[1]))
+			}
 		}
 	}
+	if serviceFilter != "" {
+		filters = append(filters, GetDimensionExpression("SERVICE", serviceFilter))
+	}
+	var filter *costexplorer.Expression
+	if len(filters) > 1 {
+		filter = &costexplorer.Expression{
+			And: filters,
+		}
+	} else if len(filters) == 1 {
+		filter = filters[0]
+	}
+
 	costInput := &costexplorer.GetCostAndUsageInput{
 		Filter:      filter,
 		Granularity: aws.String("MONTHLY"),
@@ -247,4 +266,22 @@ func GetCosts(svc *costexplorer.CostExplorer, start string, end string, costmetr
 		}
 	}
 	return resultsCosts
+}
+
+func GetTagExpression(tag string, value string) *costexplorer.Expression {
+	return &costexplorer.Expression{
+		Tags: &costexplorer.TagValues{
+			Key:    aws.String(tag),
+			Values: aws.StringSlice([]string{value}),
+		},
+	}
+}
+
+func GetDimensionExpression(dimension string, value string) *costexplorer.Expression {
+	return &costexplorer.Expression{
+		Dimensions: &costexplorer.DimensionValues{
+			Key:    aws.String(dimension),
+			Values: aws.StringSlice([]string{value}),
+		},
+	}
 }

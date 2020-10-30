@@ -45,6 +45,7 @@ GLOBAL OPTIONS:
    --end value          Second month to compare (2020-02-01) (default: "2020-10-01")
    --cost-metric value  Cost Metric to compare (NetAmortizedCost, UnblendedCost, etc.) (default: "NetAmortizedCost")
    --service value      Define a service to dig into
+   --tag value          Tag value to filter results (app=web, env=prod, etc.)
    --sort value         Column to sort results on (name, start, end, delta) (default: "name")
    --sort-order value   Order to sort in (asc or desc) (default: "asc")
    --help, -h           show help (default: false)
@@ -61,9 +62,17 @@ aws-cct --cost-metric UnblendedCost
 ```
 
 *Dig into EC2 costs*
+
 You can get the string from the initial output. Simply copy the value in the "SERVICE" section and you can filter into that
 ```
 aws-cct --service "Amazon Elastic Compute Cloud - Compute"
+```
+
+*Filter by tags*
+
+You can get filter costs by tag, to return costs for resources that match all specified tag values.
+```
+aws-cct --tag app=widgetizer --tag env=production
 ```
 
 *Compare Older Months*
