@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -251,7 +252,10 @@ func GetCosts(svc *costexplorer.CostExplorer, start string, end string, costmetr
 	for _, results := range resp.ResultsByTime {
 		for _, groups := range results.Groups {
 			for _, metrics := range groups.Metrics {
-				amount, err := strconv.ParseFloat(*metrics.Amount, 64)
+				rawAmount, err := strconv.ParseFloat(*metrics.Amount, 64)
+
+				// Round numbers immediately so we don't have to worry about weird delta math on values like $0.0000000061
+				amount := math.Round(rawAmount*100) / 100
 				if err != nil {
 					fmt.Println(err)
 				}
