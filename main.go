@@ -124,7 +124,10 @@ func main() {
 				secondAmount, _ := secondResultsCosts[service]
 				secondAmount *= multiplier
 				delta := secondAmount - amount
-				deltaPercent := delta / amount * 100
+				deltaPercent := 0.0
+				if delta != 0 {
+					deltaPercent = delta / amount * 100
+				}
 
 				finalResultsCosts = append(finalResultsCosts, ServiceCosts{
 					service,
