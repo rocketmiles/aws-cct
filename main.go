@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -62,7 +63,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "sort",
 				Value:       "name",
-				Usage:       "Column to sort results on (name, start, end, delta)",
+				Usage:       "Column to sort results on (name, start, end, delta, deltapercent)",
 				Destination: &sortColumn,
 			},
 			&cli.StringFlag{
@@ -109,6 +110,7 @@ func main() {
 				amount       float64
 				secondAmount float64
 				delta        float64
+				deltaPercent float64
 			}
 
 			var finalResultsCosts []ServiceCosts
@@ -116,17 +118,25 @@ func main() {
 			var totalAmount = 0.0
 			var totalSecondAmount = 0.0
 			var totalDelta = 0.0
+			var totalDeltaPercent = 0.0
 			for _, service := range allServiceNames {
 				amount, _ := firstResultsCosts[service]
 				secondAmount, _ := secondResultsCosts[service]
 				secondAmount *= multiplier
 				delta := secondAmount - amount
+				deltaPercent := 0.0
+				if delta != 0 {
+					deltaPercent = delta / amount * 100
+				}
+
 				finalResultsCosts = append(finalResultsCosts, ServiceCosts{
 					service,
 					amount,
 					secondAmount,
 					delta,
+					deltaPercent,
 				})
+
 				totalAmount += amount
 				totalSecondAmount += secondAmount
 				totalDelta += delta
@@ -142,6 +152,8 @@ func main() {
 					retVal = finalResultsCosts[i].secondAmount < finalResultsCosts[j].secondAmount
 				case "delta":
 					retVal = finalResultsCosts[i].delta < finalResultsCosts[j].delta
+				case "deltapercent":
+					retVal = finalResultsCosts[i].deltaPercent < finalResultsCosts[j].deltaPercent
 				default: // default to service name
 					retVal = strings.ToLower(finalResultsCosts[i].serviceName) < strings.ToLower(finalResultsCosts[j].serviceName)
 				}
@@ -157,16 +169,21 @@ func main() {
 			if isProjection {
 				secondMonthHeader += " (projection)"
 			}
-			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta"})
+
+			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta", "Delta Percent"})
 			for _, serviceCosts := range finalResultsCosts {
-				tw.AppendRow(table.Row{serviceCosts.serviceName, ac.FormatMoney(serviceCosts.amount), ac.FormatMoney(serviceCosts.secondAmount), ac.FormatMoney(serviceCosts.delta)})
+				tw.AppendRow(table.Row{serviceCosts.serviceName, ac.FormatMoney(serviceCosts.amount), ac.FormatMoney(serviceCosts.secondAmount), ac.FormatMoney(serviceCosts.delta), fmt.Sprintf("%s%%%%", accounting.FormatNumber(serviceCosts.deltaPercent, 1, "", "."))})
 			}
-			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta)})
+
+			totalDeltaPercent = totalDelta / totalAmount * 100
+
+			tw.AppendFooter(table.Row{"Total", ac.FormatMoney(totalAmount), ac.FormatMoney(totalSecondAmount), ac.FormatMoney(totalDelta), fmt.Sprintf("%s%%%%", accounting.FormatNumber(totalDeltaPercent, 1, "", "."))})
 
 			tw.SetColumnConfigs([]table.ColumnConfig{
 				{Name: firstMonthStart, Align: text.AlignRight, AlignFooter: text.AlignRight},
 				{Name: secondMonthHeader, Align: text.AlignRight, AlignFooter: text.AlignRight},
 				{Name: "Delta", Align: text.AlignRight, AlignFooter: text.AlignRight},
+				{Name: "Delta Percent", Align: text.AlignRight, AlignFooter: text.AlignRight},
 			})
 
 			fmt.Printf("\n")
@@ -238,7 +255,10 @@ func GetCosts(svc *costexplorer.CostExplorer, start string, end string, costmetr
 	for _, results := range resp.ResultsByTime {
 		for _, groups := range results.Groups {
 			for _, metrics := range groups.Metrics {
-				amount, err := strconv.ParseFloat(*metrics.Amount, 64)
+				rawAmount, err := strconv.ParseFloat(*metrics.Amount, 64)
+
+				// Round numbers immediately so we don't have to worry about weird delta math on values like $0.0000000061
+				amount := math.Round(rawAmount*100) / 100
 				if err != nil {
 					fmt.Println(err)
 				}
