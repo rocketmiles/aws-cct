@@ -16,6 +16,11 @@ brew tap rocketmiles/aws-cct https://github.com/rocketmiles/aws-cct
 brew install aws-cct
 ```
 
+Updating
+```
+brew upgrade aws-cct
+```
+
 ### Through GitHub
 
 Download from the [releases](https://github.com/rocketmiles/aws-cct/releases)
@@ -41,12 +46,12 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --start value        First month to compare (2020-01-01) (default: "2020-09-01")
-   --end value          Second month to compare (2020-02-01) (default: "2020-10-01")
+   --start value        First month to compare (2020-01-01) (default: "2020-12-01")
+   --end value          Second month to compare (2020-02-01) (default: "2021-01-01")
    --cost-metric value  Cost Metric to compare (NetAmortizedCost, UnblendedCost, etc.) (default: "NetAmortizedCost")
    --service value      Define a service to dig into
    --tag value          Tag value to filter results (app=web, env=prod, etc.)
-   --sort value         Column to sort results on (name, start, end, delta) (default: "name")
+   --sort value         Column to sort results on (name, start, end, delta, deltapercent) (default: "name")
    --sort-order value   Order to sort in (asc or desc) (default: "asc")
    --help, -h           show help (default: false)
 ```

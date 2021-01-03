@@ -27,6 +27,7 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^Brew formula'
 brews:
 - tap:
     owner: rocketmiles
