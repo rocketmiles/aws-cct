@@ -193,7 +193,7 @@ func main() {
 			})
 
 			fmt.Printf("\n")
-			fmt.Printf(tw.Render())
+			fmt.Printf(tw.RenderCSV())
 			fmt.Printf("\n")
 			return nil
 		},
