@@ -80,7 +80,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "output",
 				Value:       "table",
-				Usage:       "Output format (supported formats: table, csv), default: table",
+				Usage:       "Output format (supported formats: table, csv)",
 				Destination: &output,
 			},
 		},

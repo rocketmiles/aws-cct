@@ -53,7 +53,7 @@ GLOBAL OPTIONS:
    --tag value          Tag value to filter results (app=web, env=prod, etc.)
    --sort value         Column to sort results on (name, start, end, delta, deltapercent) (default: "name")
    --sort-order value   Order to sort in (asc or desc) (default: "asc")
-   --output value       Output format (supported formats: table, csv), default: table (default: "table")
+   --output value       Output format (supported formats: table, csv) (default: "table")
    --help, -h           show help (default: false)
 ```
 
