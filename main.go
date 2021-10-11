@@ -27,6 +27,7 @@ func main() {
 	var serviceFilter string
 	var sortColumn string
 	var sortOrder string
+	var output string
 	currentDate := time.Now()
 	thisMonthFirst := time.Date(currentDate.Year(), currentDate.Month(), 1, 0, 0, 0, 0, time.UTC)
 	previousMonthFirst := thisMonthFirst.AddDate(0, -1, 0)
@@ -61,8 +62,8 @@ func main() {
 				Destination: &serviceFilter,
 			},
 			&cli.StringSliceFlag{
-				Name:        "tag",
-				Usage:       "Tag value to filter results (app=web, env=prod, etc.)",
+				Name:  "tag",
+				Usage: "Tag value to filter results (app=web, env=prod, etc.)",
 			},
 			&cli.StringFlag{
 				Name:        "sort",
@@ -76,9 +77,16 @@ func main() {
 				Usage:       "Order to sort in (asc or desc)",
 				Destination: &sortOrder,
 			},
+			&cli.StringFlag{
+				Name:        "output",
+				Value:       "table",
+				Usage:       "Output format (supported formats: table, csv)",
+				Destination: &output,
+			},
 		},
 		Action: func(c *cli.Context) error {
-			ac := accounting.Accounting{Symbol: "$", Precision: 2}
+			var ac *accounting.Accounting
+			ac = accounting.DefaultAccounting("$", 2)
 			sess, _ := session.NewSession()
 			svc := costexplorer.New(sess)
 
@@ -176,6 +184,11 @@ func main() {
 				secondMonthHeader += " (projection)"
 			}
 
+			// Remove commas to make output compatible for CSVs
+			if output == "csv" {
+				ac.SetThousandSeparator("")
+			}
+
 			tw.AppendHeader(table.Row{"Service", firstMonthStart, secondMonthHeader, "Delta", "Delta Percent"})
 			for _, serviceCosts := range finalResultsCosts {
 				tw.AppendRow(table.Row{serviceCosts.serviceName, ac.FormatMoney(serviceCosts.amount), ac.FormatMoney(serviceCosts.secondAmount), ac.FormatMoney(serviceCosts.delta), fmt.Sprintf("%s%%%%", accounting.FormatNumber(serviceCosts.deltaPercent, 1, "", "."))})
@@ -192,9 +205,15 @@ func main() {
 				{Name: "Delta Percent", Align: text.AlignRight, AlignFooter: text.AlignRight},
 			})
 
-			fmt.Printf("\n")
-			fmt.Printf(tw.Render())
-			fmt.Printf("\n")
+			switch output {
+			case "csv":
+				fmt.Printf(tw.RenderCSV())
+			default:
+				fmt.Printf("\n")
+				fmt.Printf(tw.Render())
+				fmt.Printf("\n")
+			}
+
 			return nil
 		},
 	}
