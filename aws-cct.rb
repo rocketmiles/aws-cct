@@ -6,7 +6,6 @@ class AwsCct < Formula
   desc "AWS Cost Comparison Tool"
   homepage "https://github.com/rocketmiles/aws-cct"
   version "1.4.0"
-  bottle :unneeded
 
   on_macos do
     if Hardware::CPU.intel?
