@@ -5,28 +5,36 @@
 class AwsCct < Formula
   desc "AWS Cost Comparison Tool"
   homepage "https://github.com/rocketmiles/aws-cct"
-  version "1.4.0"
+  version "1.4.1"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.0/aws-cct_1.4.0_Darwin_x86_64.tar.gz"
-      sha256 "7b1b0f2621baa8313a8508ca684588898e65d16c15c2b54a727ed5c62318e259"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Darwin_x86_64.tar.gz"
+      sha256 "5d0fd599ccc3f71621893888813772e5881543b6d43d980377ce93760b077665"
+
+      def install
+        bin.install "aws-cct"
+      end
     end
   end
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.0/aws-cct_1.4.0_Linux_arm64.tar.gz"
-      sha256 "58395967aaf19371eac570d091f3110bdbd0e97d591f38694dbaef6b1ddbd988"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Linux_arm64.tar.gz"
+      sha256 "e618f2d254d961e35534341ab4f3966cfb149299ebcdc017a1b2bb6b1d927ccc"
+
+      def install
+        bin.install "aws-cct"
+      end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.0/aws-cct_1.4.0_Linux_x86_64.tar.gz"
-      sha256 "e54fecac6edf0eb8bcdf5fec53430017f1560564092e553ff879c1a9d832f6f1"
-    end
-  end
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Linux_x86_64.tar.gz"
+      sha256 "145ae8440c41b453c7978362e32547c440185d648bc3376b21b848f99271a880"
 
-  def install
-    bin.install "aws-cct"
+      def install
+        bin.install "aws-cct"
+      end
+    end
   end
 
   test do
