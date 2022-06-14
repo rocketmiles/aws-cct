@@ -106,7 +106,7 @@ This will output in a CSV friendly format and you can utilize this to do analysi
 aws-cct --output csv
 ```
 
-*Diagnose where the largest cost is coming from*
+*Diagnose where the largest cost increase is coming from*
 
 Between March & April 2022:
 
