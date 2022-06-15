@@ -2,10 +2,16 @@
 
 This is a simple CLI tool that wraps the AWS Cost Explorer APIs to be able to quickly identify cost anomalies between monthly bills.
 
+## Use Cases
+
+* Comparing costs between two different months
+* Creating a CSV report to show changes in the bill
+* Diagnosing which specific line item changed the most to identify anomalies
+
 ## Requirements
 
 * AWS Credentials Setup locally
-* Access to Cost Explorer (`ce:*`)
+* Access to Cost Explorer APIs (`ce:*`)
 
 ## Installation
 
@@ -98,6 +104,22 @@ aws-cct --sort delta --sort-order desc
 This will output in a CSV friendly format and you can utilize this to do analysis or for reporting.
 ```bash
 aws-cct --output csv
+```
+
+*Diagnose where the largest cost increase is coming from*
+
+Between March & April 2022:
+
+First, figure out which service has the largest cost
+```bash
+aws-cct --start 2022-03-01 --end 2022-04-01 --sort delta --sort-order desc
+```
+
+Then, copy that full service name and dig into which specific line item within that service increased the most.
+
+In this example, the EC2 costs are high and we want to see what specifically increased.
+```bash
+aws-cct --start 2022-03-01 --end 2022-04-01 --sort delta --sort-order desc --service "Amazon Elastic Compute Cloud - Compute"
 ```
 
 ## Local Development
