@@ -5,12 +5,21 @@
 class AwsCct < Formula
   desc "AWS Cost Comparison Tool"
   homepage "https://github.com/rocketmiles/aws-cct"
-  version "1.4.1"
+  version "1.5.0"
+  license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Darwin_x86_64.tar.gz"
-      sha256 "5d0fd599ccc3f71621893888813772e5881543b6d43d980377ce93760b077665"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.5.0/aws-cct_1.5.0_Darwin_x86_64.tar.gz"
+      sha256 "0b5ae24ffe703ca923ede7cdb1fb5e323595441750122be72f50a74cebce7a38"
+
+      def install
+        bin.install "aws-cct"
+      end
+    end
+    if Hardware::CPU.arm?
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.5.0/aws-cct_1.5.0_Darwin_arm64.tar.gz"
+      sha256 "731e35bdf5e90f68ecd58768d9dcb1c83a77ae151e813e8e0737f7c071df53fd"
 
       def install
         bin.install "aws-cct"
@@ -20,16 +29,16 @@ class AwsCct < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Linux_arm64.tar.gz"
-      sha256 "e618f2d254d961e35534341ab4f3966cfb149299ebcdc017a1b2bb6b1d927ccc"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.5.0/aws-cct_1.5.0_Linux_arm64.tar.gz"
+      sha256 "de9a0074e09391999ee343305e012faff6f0055989fd90ccaf72ea94facc2aa2"
 
       def install
         bin.install "aws-cct"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.4.1/aws-cct_1.4.1_Linux_x86_64.tar.gz"
-      sha256 "145ae8440c41b453c7978362e32547c440185d648bc3376b21b848f99271a880"
+      url "https://github.com/rocketmiles/aws-cct/releases/download/v1.5.0/aws-cct_1.5.0_Linux_x86_64.tar.gz"
+      sha256 "23ef8a018c79e4e007ec298ee55bff4ec54dbb190242f620e322818cba30bdcd"
 
       def install
         bin.install "aws-cct"
