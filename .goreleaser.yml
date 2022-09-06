@@ -34,5 +34,6 @@ brews:
     name: aws-cct
   description: AWS Cost Comparison Tool
   homepage: https://github.com/rocketmiles/aws-cct
+  license: "MIT"
   test: |
     system "#{bin}/aws-cct --help"
